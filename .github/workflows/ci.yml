@@ -1,28 +1,21 @@
-name: CI
-on:
-  push:
-    branches:
-      - main
-
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
     steps:
-      - name: Checkout Code
-        uses: actions/Checkout@v4
-      
-      - name: Dependencies installation
-        run : pip install -r requirements.txt
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: use secrets api key 
-        run: echo "The API key is $GROQ_API_KEY"
-        env:
-          GROQ_API_KEY: ${{secrets.GROQ_API_KEY}}
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    
-      
-      - name: run test cases
-        run: pytest -v
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-
-        
+      - name: Run tests
+        run: pytest
