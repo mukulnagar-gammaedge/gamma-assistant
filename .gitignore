@@ -1,0 +1,7 @@
+frontend
+venv
+app/.env
+app/index.html
+data
+.pytest_cache
+app/__pycache__

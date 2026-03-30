@@ -1,0 +1,21 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/Checkout@v4
+      
+      - name: Dependencies installation
+        run : pip install -r requirements.text
+      
+      - name: run test cases
+        run: pytest -v
+
+
+        
