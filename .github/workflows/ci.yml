@@ -17,7 +17,7 @@ jobs:
       - name: use secrets api key 
         run: echo "The API key is $GROQ_API_KEY"
         env:
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GROQ_API_KEY: ${{secrets.GROQ_API_KEY}}
 
     
       
