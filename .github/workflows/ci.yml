@@ -13,6 +13,13 @@ jobs:
       
       - name: Dependencies installation
         run : pip install -r requirements.txt
+
+      - name: use secrets api key 
+        run: echo "The API key is $GROQ_API_KEY"
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+
+    
       
       - name: run test cases
         run: pytest -v
