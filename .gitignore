@@ -5,3 +5,4 @@ app/index.html
 data
 .pytest_cache
 app/__pycache__
+.github

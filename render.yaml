@@ -16,6 +16,12 @@ services:
 
       - key: GROQ_API_KEY
         sync: false
+      
+      - key: PINECONE_API_KEY
+        sync: false
+      
+      - key: PINECONE_INDEX_NAME
+        value: ai-assistant
         
       - key: PYTHONUNBUFFERED
         value: true
@@ -24,11 +30,3 @@ services:
     
     # Healthcheck configuration
     healthCheckPath: /
-    
-    
-    
-    # Disk for persistent data (optional - if you need to keep vector store)
-    disk:
-      name: data
-      mountPath: /app/data
-      sizeGB: 2

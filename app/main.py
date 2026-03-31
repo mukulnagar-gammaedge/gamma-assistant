@@ -11,6 +11,7 @@ from app.auth import (
 from app.auth import create_user
 from fastapi import UploadFile, File
 from app.ingestion import ingest_document
+import os
 
 app = FastAPI(title="Internal Knowledge Assistant")
 
@@ -107,16 +108,19 @@ def upload_doc(
 
         raise HTTPException(status_code=403)
 
-
     file_path = f"data/documents/{file.filename}"
-
+    
     with open(file_path, "wb") as f:
-
         f.write(file.file.read())
-
-    ingest_document(file_path)
-
-    return {"status": "uploaded"}
+    
+    try:
+        ingest_document(file_path)
+    finally:
+        # Always delete PDF after ingestion
+        if os.path.exists(file_path):
+            os.remove(file_path)
+    
+    return {"status": "uploaded", "message": "PDF processed and stored in Pinecone"}
 
 @app.post("/signup")
 def signup(username: str, password: str):

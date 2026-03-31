@@ -3,7 +3,18 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv() 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+client = None
+
+def get_groq_client():
+    """Lazily initialize Groq client when needed"""
+    global client
+    if client is None:
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY environment variable is not set")
+        client = Groq(api_key=api_key)
+    return client
 
 def judge_answer(question, answer, context):
     context_text = "\n".join(context)
@@ -34,7 +45,7 @@ def judge_answer(question, answer, context):
     }}
     """
 
-    response = client.chat.completions.create(
+    response = get_groq_client().chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[
             {

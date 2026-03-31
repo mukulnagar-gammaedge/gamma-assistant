@@ -1,8 +1,7 @@
 import numpy as np 
-import faiss 
 from sentence_transformers import SentenceTransformer
-
 from sentence_transformers import CrossEncoder
+from app.pinecone_utils import search_vectors
 
 reranker = CrossEncoder(
     "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -11,48 +10,26 @@ reranker = CrossEncoder(
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
 
-def load_vector_store():
-
-    index = faiss.read_index("data/vector_store/index.faiss")
-
-    chunks = np.load(
-        "data/vector_store/chunks.npy",
-        allow_pickle=True
-    )
-    return index, chunks
-
 def embed_query(query):
     embedding = model.encode([query])
-    return np.array(embedding)
+    return embedding[0]  # Return single embedding, not array
+
 
 def search(query, top_k=5, threshold=0.2):
-
-    index, chunks = load_vector_store()
-
     query_vector = embed_query(query)
-
-    distances, indices = index.search(query_vector, top_k)
-
-    results = []
-
-    for score, idx in zip(distances[0], indices[0]):
-
-        if idx < 0:
-            continue
-
-        similarity = 1 / (1 + score)
-
-        # include close-enough matches; exact match is not required
-        if similarity >= threshold:
-
-            results.append({
-
-                "text": chunks[idx],
-                "score": float(similarity)
-
-            })
-
-    return results
+    
+    # Search in Pinecone
+    results = search_vectors(query_vector, top_k=top_k, threshold=threshold)
+    
+    # Convert to same format as before
+    formatted_results = []
+    for text, score in results:
+        formatted_results.append({
+            "text": text,
+            "score": float(score)
+        })
+    
+    return formatted_results
 
 
 

@@ -2,7 +2,7 @@ import os
 import numpy as np 
 from pypdf import PdfReader 
 from sentence_transformers import SentenceTransformer
-import faiss
+from app.pinecone_utils import upsert_vectors, clear_index
 
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -34,13 +34,10 @@ def create_embeddings(chunks):
 
 
 def store_vectors(chunks, embeddings):
-    dimension = embeddings.shape[1]
-    index = faiss.IndexFlatL2(dimension)
-    index.add(embeddings)
-    faiss.write_index(index, "data/vector_store/index.faiss")
-    np.save("data/vector_store/chunks.npy", chunks)
-
-    print("stored", len(chunks), "chunks")
+    # Clear previous vectors and store new ones in Pinecone
+    clear_index()
+    upsert_vectors(embeddings, chunks)
+    print("stored", len(chunks), "chunks in Pinecone")
 
 
 def ingest_document(file_path):

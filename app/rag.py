@@ -14,7 +14,18 @@ from app.guardrails import (
 from app.evaluator import judge_answer
 
 load_dotenv() 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+client = None
+
+def get_groq_client():
+    """Lazily initialize Groq client when needed"""
+    global client
+    if client is None:
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            raise ValueError("GROQ_API_KEY environment variable is not set")
+        client = Groq(api_key=api_key)
+    return client
 
 
 def build_prompt_with_memory(question, context_chunks, previous_messages):
@@ -82,7 +93,7 @@ def generate_answer_with_memory(session_id, question):
       
     full_answer = ""
 
-    completion = client.chat.completions.create(
+    completion = get_groq_client().chat.completions.create(
         model="llama-3.3-70b-versatile",
         messages=[{"role": "user", "content": prompt}],
         stream=True  #sse streaming allow
