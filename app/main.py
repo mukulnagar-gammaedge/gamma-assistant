@@ -22,6 +22,7 @@ origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5500",
     "http://localhost:5500",
+    "https://delicate-hamster-232b1e.netlify.app",
 ]
 
 # 3. Add the middleware to your app
