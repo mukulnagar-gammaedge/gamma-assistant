@@ -90,7 +90,7 @@ def generate_answer_with_memory(session_id, question):
     # Handle case when no documents found
     if not chunks:
         yield "I could not find this information in the provided documents. Please upload relevant documents first."
-        add_message(session_id, {"role": "assistant", "content": "No documents found"})
+        add_message(session_id, "assistant", "No documents found")
         return
 
     prompt = build_prompt_with_memory(question, chunks, previous_messages)
@@ -126,8 +126,8 @@ def generate_answer_with_memory(session_id, question):
         print("Evaluation :--", evaluation)
         
         # Store the complete message in memory
-        add_message(session_id, {"role": "user", "content": question})
-        add_message(session_id, {"role": "assistant", "content": full_answer})
+        add_message(session_id, "user", question)
+        add_message(session_id, "assistant", full_answer)
         
     except Exception as e:
         print(f"Error in RAG: {e}")
