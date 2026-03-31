@@ -1,11 +1,6 @@
 import numpy as np 
-from sentence_transformers import CrossEncoder
 from app.onnx_embeddings import encode
 from app.pinecone_utils import search_vectors
-
-reranker = CrossEncoder(
-    "cross-encoder/ms-marco-MiniLM-L-6-v2"
-)
 
 
 def embed_query(query):
@@ -33,30 +28,13 @@ def search(query, top_k=5, threshold=0.2):
 
 
 def rerank(query, results, top_k=3):
-    if not results: return []
-
-    pairs = []
-
-    for r in results:
-
-        pairs.append((query, r["text"]))
-
-    scores = reranker.predict(pairs)
-
-    ranked = sorted(
-
-        zip(results, scores),
-
-        key=lambda x: x[1],
-
-        reverse=True
-
-    )
-
-    top_results = [
-
-        r[0]["text"] for r in ranked[:top_k]
-
-    ]
-
-    return top_results
+    """Simple rerank - just return top results by their existing scores
+    
+    (Using TF-IDF embeddings, the initial ranking is already good)
+    """
+    if not results:
+        return []
+    
+    # Sort by score and return top results
+    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)
+    return [r["text"] for r in sorted_results[:top_k]]

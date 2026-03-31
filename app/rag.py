@@ -85,7 +85,7 @@ def generate_answer_with_memory(session_id, question):
 
     chunks1 = search(question, top_k=5)
     # Applying re-ranker to re analyze the generate result 
-    chunks = rerank(question, chunks1)
+    chunks = rerank(question, chunks1)  # Filter to top-3 results
 
 
     prompt = build_prompt_with_memory(question, chunks, previous_messages)
