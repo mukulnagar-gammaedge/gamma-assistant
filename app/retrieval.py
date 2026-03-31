@@ -1,17 +1,15 @@
 import numpy as np 
-from sentence_transformers import SentenceTransformer
 from sentence_transformers import CrossEncoder
+from app.onnx_embeddings import encode
 from app.pinecone_utils import search_vectors
 
 reranker = CrossEncoder(
     "cross-encoder/ms-marco-MiniLM-L-6-v2"
 )
 
-model = SentenceTransformer("all-MiniLM-L6-v2")
-
 
 def embed_query(query):
-    embedding = model.encode([query])
+    embedding = encode([query])
     return embedding[0]  # Return single embedding, not array
 
 

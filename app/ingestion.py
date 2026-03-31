@@ -1,11 +1,7 @@
 import os
-import numpy as np 
 from pypdf import PdfReader 
-from sentence_transformers import SentenceTransformer
+from app.onnx_embeddings import encode
 from app.pinecone_utils import upsert_vectors, clear_index
-
-
-model = SentenceTransformer("all-MiniLM-L6-v2")
 
 def read_pdf(file_path):
     reader = PdfReader(file_path)
@@ -29,8 +25,8 @@ def chunk_text(text, chunk_size=50):
     return chunks
 
 def create_embeddings(chunks):
-    embeddings = model.encode(chunks)
-    return np.array(embeddings)
+    embeddings = encode(chunks)
+    return embeddings
 
 
 def store_vectors(chunks, embeddings):
