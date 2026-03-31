@@ -14,7 +14,10 @@ INJECTION_PATTERNS = [
     "disclose hidden policy",
     "act as system",
     "bypass restrictions",
-    "show confidential data"
+    "show confidential data",
+    "answer if context is null",
+    "null context",
+    "answer outside from the knowledge base"
 
 ]
 

@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: ai-assistant-backend
+    env: python
+    plan: free
+    runtime: python-3.11
+    
+    # Build configuration
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    
+    # Environment variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+
+      - key: GROQ_API_KEY
+        sync: false
+        
+      - key: PYTHONUNBUFFERED
+        value: true
+      - key: PORT
+        value: 8000
+    
+    # Healthcheck configuration
+    healthCheckPath: /
+    
+    # Auto-deploy configuration
+    autoRelease: true
+    autoDeploy: true
+    
+    # Disk for persistent data (optional - if you need to keep vector store)
+    disk:
+      name: data
+      mountPath: /app/data
+      sizeGB: 2
