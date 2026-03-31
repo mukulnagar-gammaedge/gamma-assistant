@@ -12,7 +12,7 @@ services:
     # Environment variables
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11
+        value: 3.11.8
 
       - key: GROQ_API_KEY
         sync: false
