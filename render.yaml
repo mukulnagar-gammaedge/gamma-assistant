@@ -25,9 +25,7 @@ services:
     # Healthcheck configuration
     healthCheckPath: /
     
-    # Auto-deploy configuration
-    autoRelease: true
-    autoDeploy: true
+    
     
     # Disk for persistent data (optional - if you need to keep vector store)
     disk:
