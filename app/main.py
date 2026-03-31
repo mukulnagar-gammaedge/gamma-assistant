@@ -109,6 +109,9 @@ def upload_doc(
 
         raise HTTPException(status_code=403)
 
+    # Create directory if it doesn't exist
+    os.makedirs("data/documents", exist_ok=True)
+    
     file_path = f"data/documents/{file.filename}"
     
     with open(file_path, "wb") as f:

@@ -86,38 +86,49 @@ def generate_answer_with_memory(session_id, question):
     chunks1 = search(question, top_k=5)
     # Applying re-ranker to re analyze the generate result 
     chunks = rerank(question, chunks1)  # Filter to top-3 results
-
+    
+    # Handle case when no documents found
+    if not chunks:
+        yield "I could not find this information in the provided documents. Please upload relevant documents first."
+        add_message(session_id, {"role": "assistant", "content": "No documents found"})
+        return
 
     prompt = build_prompt_with_memory(question, chunks, previous_messages)
 
       
     full_answer = ""
 
-    completion = get_groq_client().chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        stream=True  #sse streaming allow
-    )
+    try:
+        completion = get_groq_client().chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            stream=True  #sse streaming allow
+        )
 
-    for chunk in completion:
+        for chunk in completion:
+           
+            content = chunk.choices[0].delta.content
+            if content:
+                time.sleep(0.05)
+                full_answer += content
+                yield content
        
-        content = chunk.choices[0].delta.content
-        if content:
-            time.sleep(0.05)
-            full_answer += content
-            yield content
-   
-    # Check for answer is grounding or not 
-    if not grounded_answer(full_answer):
-        yield "\n\nWarning: answer may not be grounded in documents."
-    
+        # Check for answer is grounding or not 
+        if not grounded_answer(full_answer):
+            yield "\n\nWarning: answer may not be grounded in documents."
+        
 
-    evaluation = judge_answer(
-        question,
-        full_answer,
-        chunks
-    )
-    print("Evaluation :--", evaluation)
-
-    add_message(session_id, "user", question)
-    add_message(session_id, "assistant", full_answer)
+        evaluation = judge_answer(
+            question,
+            full_answer,
+            chunks
+        )
+        print("Evaluation :--", evaluation)
+        
+        # Store the complete message in memory
+        add_message(session_id, {"role": "user", "content": question})
+        add_message(session_id, {"role": "assistant", "content": full_answer})
+        
+    except Exception as e:
+        print(f"Error in RAG: {e}")
+        yield f"\n\nError generating response: {str(e)}"
