@@ -2,6 +2,7 @@
 fastapi==0.135.2
 uvicorn==0.42.0
 python-multipart==0.0.22
+requests
 
 # Vector Database
 pinecone==5.2.0
