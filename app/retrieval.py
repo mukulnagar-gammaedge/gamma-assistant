@@ -1,7 +1,12 @@
 import numpy as np 
 from app.onnx_embeddings import encode
 from app.pinecone_utils import search_vectors
-
+import requests
+API_URL = "https://api.jina.ai/v1/rerank"
+headers = {
+    "Authorization": f"Bearer jina_4a70666e3cf14691a42658c24dc04bfa7j-dErPbiB0IH8DiLE1eaET9mJmf",
+    "Content-Type": "application/json"
+}
 
 def embed_query(query):
     embedding = encode([query])
@@ -28,13 +33,23 @@ def search(query, top_k=5, threshold=0.2):
 
 
 def rerank(query, results, top_k=3):
-    """Simple rerank - just return top results by their existing scores
-    
-    (Using TF-IDF embeddings, the initial ranking is already good)
-    """
     if not results:
         return []
-    
-    # Sort by score and return top results
-    sorted_results = sorted(results, key=lambda x: x["score"], reverse=True)
-    return [r["text"] for r in sorted_results[:top_k]]
+
+    payload = {
+        "model": "jina-reranker-v3-base-en",  # or jina-reranker-v3-base-multilingual
+        "query": query,
+        "documents": [r["text"] for r in results]
+    }
+
+    response = requests.post(API_URL, headers=headers, json=payload)
+    data = response.json()
+
+    # Jina returns scores aligned with documents
+    reranked = sorted(
+        zip(results, data["scores"]),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    return [r[0]["text"] for r in reranked[:top_k]]

@@ -109,9 +109,9 @@ def generate_answer_with_memory(session_id, question):
            
             content = chunk.choices[0].delta.content
             if content:
-                time.sleep(0.05)
-                full_answer += content
-                yield content
+                yield f"data: {content}\n\n"
+
+                
        
         # Check for answer is grounding or not 
         if not grounded_answer(full_answer):

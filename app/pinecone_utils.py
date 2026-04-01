@@ -107,7 +107,7 @@ def search_vectors(query_embedding, top_k=5, threshold=0.2):
 
 def clear_index():
     """
-    ⚠️ WARNING: Clear ALL vectors from Pinecone index
+    WARNING: Clear ALL vectors from Pinecone index
     This removes all documents and cannot be undone!
     Use clear_document() to remove specific documents instead.
     """
@@ -117,7 +117,7 @@ def clear_index():
     
     if total_vectors > 0:
         index.delete(delete_all=True)
-        print(f"⚠️  Cleared {total_vectors} vectors from Pinecone index")
+        print(f"  Cleared {total_vectors} vectors from Pinecone index")
 
 
 def clear_document(doc_id):

@@ -60,7 +60,11 @@ def ask(question: str = Query(...), token: str = Query(...)):
 
     session_id = user["user_id"]      #
     generator = generate_answer_with_memory(session_id, question)
-    return StreamingResponse(generator, media_type="text/plain")
+    return StreamingResponse(
+        generator,
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection":"keep-alive"}
+        )
 
 
 
