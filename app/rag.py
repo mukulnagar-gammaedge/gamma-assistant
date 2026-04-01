@@ -109,6 +109,7 @@ def generate_answer_with_memory(session_id, question):
            
             content = chunk.choices[0].delta.content
             if content:
+                full_answer += content
                 yield f"data: {content}\n\n"
 
                 
