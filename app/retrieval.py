@@ -37,7 +37,7 @@ def rerank(query, results, top_k=3):
         return []
 
     payload = {
-        "model": "jina-reranker-v3-base-en",  # or jina-reranker-v3-base-multilingual
+        "model": "jina-reranker-v3",  # or jina-reranker-v3-base-multilingual
         "query": query,
         "documents": [r["text"] for r in results]
     }
@@ -47,9 +47,15 @@ def rerank(query, results, top_k=3):
 
     # Jina returns scores aligned with documents
     reranked = sorted(
-        zip(results, data["scores"]),
-        key=lambda x: x[1],
+        [
+            {
+                "text": item["document"]["text"],
+                "rerank_score": item["relevance_score"]
+            }
+            for item in data["results"]
+        ],
+        key=lambda x: x["rerank_score"],
         reverse=True
     )
 
-    return [r[0]["text"] for r in reranked[:top_k]]
+    return [r["text"] for r in reranked[:top_k]]
